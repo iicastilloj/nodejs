@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="//code.jquery.com/jquery-1.10.0.min.js"></script>
+	<link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+	<div id="status">
+		
+	</div>
+
+	<input type="text" id="text_write">
+	<button id="submit_btn">De click Aqui</button>
+
+	<script>
+		var socket=io.connect('192.168.15.52');//Se conecta el cliente con el servidor
+		jQuery(function(){
+			//Acciones del usuario en boton
+
+			socket.on('btn_return',function(data){
+				jQuery('#status').html(data.text);
+			});
+			jQuery('#submit_btn').click(function(){
+				socket.emit('btn');//Prepara un evento al socket
+			});
+		//caja de texto
+			socket.on('user_writing',function(){
+				jQuery('#status').html('Esta escribiendo');
+			});
+
+			jQuery('#text_write').keydown(function(){
+				socket.emit('user_write');
+			});
+
+			socket.on('user_leave_write', function() {
+				jQuery('#status').html('&nbsp;');
+			});
+			jQuery('#text_write').keyup(function(){
+				socket.emit('user_leave_write');
+			});
+
+
+		//mover mouse			
+			socket.on('user_moving_mouse',function(){
+				jQuery('#status').html('Esta moviendo el mouse');
+			});
+
+
+			jQuery('#move_space').mousemove(function(){
+				socket.emit('user_move');
+			});
+		});
+
+	</script>
+	<hr>
+		<div id="move_space">
+		<br/>
+	Espacio del puntero
+		<br/>
+	</div>
+</body>
+</html>
